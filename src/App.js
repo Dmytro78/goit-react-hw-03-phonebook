@@ -82,11 +82,14 @@ export default class App extends Component {
         <h1 className={css}>Phonebook</h1>
         <Form onSubmit={this.addContact} />
         <h2 className={css}>Contacts</h2>
-        <Filter value={filter} onChange={this.changeFilter} />
-         <ContactList
-            contacts={VisibleContacts}
-            onDeleteContact={this.deleteContact}
-          />        
+        {this.state.contacts.length === 0 ? null :
+          <Filter value={filter} onChange={this.changeFilter}
+          />}
+        {this.state.contacts.length===0? <p> No contacts</p> :
+          <ContactList
+          contacts={VisibleContacts}
+          onDeleteContact={this.deleteContact}
+        />}
       </>
     );
   }
