@@ -8,22 +8,37 @@ import css from "./App.css";
 
 export default class App extends Component {
   state = {
-    contacts: [
-      { id: uuidv4(), name: "Rosie Simpson", number: "459-12-56" },
-      { id: uuidv4(), name: "Hermione Kline", number: "443-89-12" },
-      { id: uuidv4(), name: "Eden Clements", number: "645-17-79" },
-      { id: uuidv4(), name: "Annie Copeland", number: "227-91-26" },
-    ],
+    contacts: [],
     filter: "",
   };
 
+    componentDidMount() {
+    
+    const contacts = localStorage.getItem("contacts");
+    const parsedContacts = JSON.parse(contacts);
+
+    if (parsedContacts) {
+      this.setState({ contacts: parsedContacts });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+   
+    const nextContacts = this.state.contacts;
+    const prevContacts = prevState.contacts;
+
+    if (nextContacts !== prevContacts) {
+      localStorage.setItem("contacts", JSON.stringify(nextContacts));
+    }
+  }
+
   addContact = ({ name, number }) => {
-    let duplicate = this.state.contacts.find(
-      (contact) => contact.name === name
+    const duplicate = this.state.contacts.find(
+      (contact) => contact.nametoLowerCase() === name.toLowerCase()
     );
 
     if (duplicate) {
-      alert(` Контакт ${name} уже существует!`);
+      alert(`${name} is already in contacts`);
     } else {
       const contact = {
         name,
@@ -37,10 +52,11 @@ export default class App extends Component {
     }
   };
 
-  changeFilter = (e) => {
+   changeFilter = (e) => {
     this.setState({ filter: e.currentTarget.value });
   };
 
+ 
   getVisibleContacts = () => {
     const { filter, contacts } = this.state;
     const normalizedFilter = filter.toLowerCase();
@@ -50,7 +66,7 @@ export default class App extends Component {
   };
 
   deleteContact = (contactId) => {
-    this.setState((prevState) => ({
+      this.setState((prevState) => ({
       contacts: prevState.contacts.filter(
         (contact) => contact.id !== contactId
       ),
@@ -67,10 +83,10 @@ export default class App extends Component {
         <Form onSubmit={this.addContact} />
         <h2 className={css}>Contacts</h2>
         <Filter value={filter} onChange={this.changeFilter} />
-        <ContactList
-          contacts={VisibleContacts}
-          onDeleteContact={this.deleteContact}
-        />
+         <ContactList
+            contacts={VisibleContacts}
+            onDeleteContact={this.deleteContact}
+          />        
       </>
     );
   }
